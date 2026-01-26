@@ -1,0 +1,47 @@
+name: 自動テスト
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    name: TypeScriptテスト
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリのチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Node.jsのセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 依存関係のインストール
+        run: npm ci
+
+      - name: TypeScript型チェック
+        run: npx tsc --noEmit
+
+      - name: ESLintチェック
+        run: npm run lint
+
+      - name: ビルドテスト
+        run: npm run build
+
+      - name: テスト実行
+        run: |
+          if [ -d "src/tests" ] && [ "$(ls -A src/tests/*.test.* 2>/dev/null)" ]; then
+            npm test
+          else
+            echo "テストファイルが見つかりません。src/testsフォルダにテストを追加してください。"
+          fi
+        continue-on-error: false
