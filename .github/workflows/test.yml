@@ -39,9 +39,14 @@ jobs:
 
       - name: テスト実行
         run: |
-          if [ -d "src/tests" ] && [ "$(ls -A src/tests/*.test.* 2>/dev/null)" ]; then
-            npm test
+          if [ -d "src/tests" ] && find src/tests -name "*.test.ts" -o -name "*.test.tsx" -o -name "*.test.js" -o -name "*.test.jsx" | grep -q .; then
+            if grep -q '"test"' package.json; then
+              npm test
+            else
+              echo "警告: package.jsonにtestスクリプトが定義されていません。"
+              echo "テストを実行するには、package.jsonに適切なテストランナー（例: Vitest、Jest等）を追加してください。"
+              exit 1
+            fi
           else
             echo "テストファイルが見つかりません。src/testsフォルダにテストを追加してください。"
           fi
-        continue-on-error: false
