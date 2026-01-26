@@ -39,8 +39,8 @@ jobs:
 
       - name: テスト実行
         run: |
-          if [ -d "src/tests" ] && find src/tests -name "*.test.ts" -o -name "*.test.tsx" -o -name "*.test.js" -o -name "*.test.jsx" | grep -q .; then
-            if grep -q '"test"' package.json; then
+          if [ -d "src/tests" ] && find src/tests \( -name "*.test.ts" -o -name "*.test.tsx" -o -name "*.test.js" -o -name "*.test.jsx" \) | grep -q .; then
+            if grep -q '"test"[[:space:]]*:' package.json; then
               npm test
             else
               echo "警告: package.jsonにtestスクリプトが定義されていません。"
